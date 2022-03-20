@@ -1,13 +1,13 @@
 package com.andre.cadastro;
 
+
+import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import org.testcontainers.containers.PostgreSQLContainer;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.testcontainers.containers.PostgreSQLContainer;
-
-import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
-
-public class CadastroTestLifecyclingManager implements QuarkusTestResourceLifecycleManager{
+public class CadastroTestLifecyclingManager implements QuarkusTestResourceLifecycleManager {
 
 	public static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:12:2");
 	
