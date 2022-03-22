@@ -3,6 +3,7 @@ package com.andre.mp.restaurante;
 import com.andre.mp.pratos.Prato;
 import com.andre.mp.pratos.PratoDTO;
 import io.smallrye.mutiny.Multi;
+import io.vertx.mutiny.pgclient.PgPool;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -14,7 +15,7 @@ import javax.ws.rs.core.MediaType;
 public class RestauranteResource {
 
     @Inject
-    io.vertx.mutiny.pgclient.PgPool client;
+    PgPool client;
 
     @GET
     @Path("{idRestaurante}/pratos")

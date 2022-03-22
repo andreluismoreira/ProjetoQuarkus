@@ -11,6 +11,8 @@ import com.andre.cadastro.Restaurante.AtualizarRestauranteDTO;
 import com.andre.cadastro.Restaurante.Restaurante;
 import com.andre.cadastro.Restaurante.RestauranteDTO;
 import com.andre.cadastro.Restaurante.RestauranteMapper;
+import io.smallrye.reactive.messaging.annotations.Channel;
+import io.smallrye.reactive.messaging.annotations.Emitter;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.SimplyTimed;
 import org.eclipse.microprofile.metrics.annotation.Timed;
@@ -24,6 +26,8 @@ import org.jboss.logging.Logger;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -50,6 +54,25 @@ public class RestauranteResource {
     @Inject
     PratoMapper pratoMapper;
 
+    @Inject
+    @Channel("restaurantes-adicionados")
+    Emitter<String> emitter;
+
+    @POST
+    @Transactional
+    @APIResponse(responseCode = "201", description = " Caso o restaurante seja cadastrado com sucesso")
+    @APIResponse(responseCode = "400",content = @Content(schema = @Schema(allOf= ConstraintViolationResponse.class)))
+    public Response adicionar(@Valid AdicionarRestauranteDTO dto) {
+        Restaurante restaurante = restauranteMapper.toRestaurante(dto);
+        restaurante.persist();
+
+        Jsonb create = JsonbBuilder.create();
+        String json = create.toJson(restaurante);
+        emitter.send(json);
+
+        return Response.status(Status.CREATED).build();
+    }
+
     @GET
     @Counted(
 	name = "Quantidade buscas Restaurante")
@@ -63,15 +86,7 @@ public class RestauranteResource {
                 restauranteMapper.toRestauranteDTO(r)).collect(Collectors.toList());
     }
     
-    @POST
-    @Transactional
-    @APIResponse(responseCode = "201", description = " Caso o restaurante seja cadastrado com sucesso")
-    @APIResponse(responseCode = "400",content = @Content(schema = @Schema(allOf= ConstraintViolationResponse.class)))
-    public Response adicionar(@Valid AdicionarRestauranteDTO dto) {
-        Restaurante restaurante = restauranteMapper.toRestaurante(dto);
-    	restaurante.persist();
-    	return Response.status(Status.CREATED).build();
-    }
+
     
     @PUT
     @Path("{id}")

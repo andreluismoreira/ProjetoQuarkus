@@ -27,11 +27,6 @@ public class Prato {
     public static Multi<PratoDTO> findAll(PgPool pgPool) {
         Uni<RowSet<Row>> preparedQuery = pgPool.query("select * from prato").execute();
         return unitToMulti(preparedQuery);
-//        Uni<RowSet<Row>> preparedQuery = pgPool.preparedQuery("select * from prato");
-//        return = preparedQuery.onItem().transformToMulti(rowSet -> Multi.createFrom().items(() -> {
-//            return StreamSupport.stream(rowSet.spliterator(), false);
-//        })).onItem().apply(PratoDTO::from);
-//        return null;
     }
 
     public static Multi<PratoDTO> findAll(PgPool client, Long idRestaurante) {
